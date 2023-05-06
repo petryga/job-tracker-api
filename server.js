@@ -26,6 +26,7 @@ app.use(
           [
             "https://job-tracker-ibdv.onrender.com",
             "https://job-tracker-ibdv.onrender.com/",
+            'https://job-board-backend.onrender.com/api/users/login',
             /\.job-tracker-ibdv.onrender.com$/,
           ].indexOf(origin) !== -1) ||
         !origin
