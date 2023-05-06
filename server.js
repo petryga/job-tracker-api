@@ -36,8 +36,11 @@ app.use(
     },
     credentials: true,
     optionsSuccessStatus: 200,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 
 //routes middleware
 app.use("/api/users", userRoute);
