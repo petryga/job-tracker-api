@@ -23,9 +23,10 @@ app.use(
     origin: (origin, callback) => {
       if (
         (origin &&
-          ["https://job-tracker-ibdv.onrender.com", /\.job-tracker-ibdv.onrender.com$/].indexOf(
-            origin
-          ) !== -1) ||
+          [
+            "https://job-tracker-ibdv.onrender.com",
+            /\.job-tracker-ibdv.onrender.com$/,
+          ].indexOf(origin) !== -1) ||
         !origin
       ) {
         callback(null, true);
@@ -33,9 +34,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
     optionsSuccessStatus: 200,
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
