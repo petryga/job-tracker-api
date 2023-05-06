@@ -25,6 +25,7 @@ app.use(
         (origin &&
           [
             "https://job-tracker-ibdv.onrender.com",
+            "https://job-tracker-ibdv.onrender.com/",
             /\.job-tracker-ibdv.onrender.com$/,
           ].indexOf(origin) !== -1) ||
         !origin
