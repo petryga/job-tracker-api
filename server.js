@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute.js");
 const boardRoute = require("./routes/boardRoute.js");
 const jobRoute = require("./routes/jobRoute.js");
-const contactRouter = require("./TODO/contactRouter.js");
 const errorHandler = require("./middleware/errorMiddleware.js");
 require("dotenv").config();
 const cors = require("cors");
