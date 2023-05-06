@@ -23,10 +23,9 @@ app.use(
     origin: (origin, callback) => {
       if (
         (origin &&
-          [
-            "https://job-tracker-ibdv.onrender.com",
-            "https://job-tracker-ibdv.onrender.com/",
-          ].indexOf(origin) !== -1) ||
+          ["https://job-tracker-ibdv.onrender.com", /\.job-tracker-ibdv.onrender.com$/].indexOf(
+            origin
+          ) !== -1) ||
         !origin
       ) {
         callback(null, true);
