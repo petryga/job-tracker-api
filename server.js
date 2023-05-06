@@ -20,13 +20,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: (origin, cb) => {
+    origin: (origin, callback) => {
       if (
-        ["https://job-tracker-ibdv.onrender.com"].indexOf(String(origin)) !== -1
+        (origin &&
+          [
+            "https://job-tracker-ibdv.onrender.com",
+            "https://job-tracker-ibdv.onrender.com/",
+          ].indexOf(origin) !== -1) ||
+        !origin
       ) {
-        cb(null, true);
+        callback(null, true);
       } else {
-        cb(new Error("Not allowed by CORS"));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
