@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: true,
   })
 );
 
