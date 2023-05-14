@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("Password must be at least 6 characters");
   }
 
-  if (!email.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)){
+  if (!email.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)) {
     res.status(400);
     throw new Error("Please enter a valid email");
   }
@@ -94,7 +94,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("User does not exist, please sign up");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, String(user.password));
 
   const token = generateToken(user._id);
 
@@ -110,14 +110,16 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid credentials");
   }
 
+  const data = {
+    _id: user._id,
+    email: user.email,
+    password: user.password,
+    token,
+    name: user.name,
+  };
+
   if (user && isMatch) {
-    res.status(200).json({
-      _id: user._id,
-      email: user.email,
-      password: user.password,
-      token,
-      name: user.name,
-    });
+    res.status(200).json(data);
   }
 });
 

@@ -20,23 +20,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin
-      // (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not " +
-          "allow access from the specified Origin.";
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  })
-);
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 //routes middleware
 app.use("/api/users", userRoute);
@@ -44,9 +28,9 @@ app.use("/api/boards", boardRoute);
 app.use("/api/jobs", jobRoute);
 
 //routes
-app.get("/", (_req, res) => {
-  res.send("Home page");
-});
+// app.get("/", (_req, res) => {
+//   res.send("Home page");
+// });
 
 //error middleware
 app.use(errorHandler);
