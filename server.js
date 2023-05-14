@@ -8,6 +8,7 @@ const errorHandler = require("./middleware/errorMiddleware.js");
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const allowedOrigins = require("./config/allowedOrigins.js");
 
 const app = express();
 
@@ -18,30 +19,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (
-        (origin &&
-          [
-            "https://job-tracker-ibdv.onrender.com",
-            "https://job-tracker-ibdv.onrender.com/",
-            'https://job-board-backend.onrender.com/api/users/login',
-            /\.job-tracker-ibdv.onrender.com$/,
-          ].indexOf(origin) !== -1) ||
-        !origin
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    optionsSuccessStatus: 200,
-    credentials: true,
+    origin: allowedOrigins,
   })
 );
-
-app.options("*", cors());
 
 //routes middleware
 app.use("/api/users", userRoute);
