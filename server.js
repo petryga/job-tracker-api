@@ -20,17 +20,14 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(
+  cors({ origin: allowedOrigins, credentials: true, optionsSuccessStatus: 200 })
+);
 
 //routes middleware
 app.use("/api/users", userRoute);
 app.use("/api/boards", boardRoute);
 app.use("/api/jobs", jobRoute);
-
-//routes
-// app.get("/", (_req, res) => {
-//   res.send("Home page");
-// });
 
 //error middleware
 app.use(errorHandler);
