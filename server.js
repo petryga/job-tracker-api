@@ -24,6 +24,10 @@ app.use(
   cors({ origin: allowedOrigins, credentials: true, optionsSuccessStatus: 200 })
 );
 
+app.options("/*", (_, res) => {
+  res.sendStatus(200);
+});
+
 //routes middleware
 app.use("/api/users", userRoute);
 app.use("/api/boards", boardRoute);
