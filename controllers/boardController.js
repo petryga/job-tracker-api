@@ -50,7 +50,7 @@ const createBoard = asyncHandler(async (req, res) => {
 
     await Job.create({
       _id: jobID2,
-      companyName: "Facebook",
+      companyName: "Meta",
       position: "CEO",
       isFavorite: false,
       boardID: boardID,
@@ -60,7 +60,7 @@ const createBoard = asyncHandler(async (req, res) => {
         contactEmail: "",
         contactPhone: "",
         contactNotes: "",
-        companyName: "Facebook",
+        companyName: "Meta",
         jobID2,
       },
     });

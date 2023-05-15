@@ -29,7 +29,7 @@ const jobSearchCards = (cardID, cardID2) => {
     },
     {
       _id: cardID2,
-      text: "Facebook",
+      text: "Meta",
       subtext: "CEO",
       color: getRandomColor(),
       isFavorite: false,
