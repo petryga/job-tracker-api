@@ -65,7 +65,7 @@ app.use(bodyParser.json());
 // CORS Configuration
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: allowedOrigins, // TODO move to env
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -78,6 +78,7 @@ app.use("/api/jobs", jobRoute);
 
 // Connect to MongoDB and start server
 mongoose
+  // @ts-ignore
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
