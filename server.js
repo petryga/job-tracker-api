@@ -62,6 +62,14 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// CORS Configuration
+app.use(
+  cors({
+    origin: allowedOrigins, // TODO move to env
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 //add manual check for options request
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
@@ -72,14 +80,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-// CORS Configuration
-app.use(
-  cors({
-    origin: allowedOrigins, // TODO move to env
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
 
 // Routes
 app.use("/api/users", userRoute);
