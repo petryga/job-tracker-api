@@ -65,23 +65,13 @@ app.use(bodyParser.json());
 // CORS Configuration
 app.use(
   cors({
-    origin: allowedOrigins, // TODO move to env
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: false,
+    // credentials: true,
+    // optionsSuccessStatus: 200,
   })
 );
-//add manual check for options request
-app.use((req, res, next) => {
-  console.log(req.method)
-  if (req.method === "OPTIONS") {
-    console.log(res.header);
-    res.header("Access-Control-Allow-Origin", '*');
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.status(200).json({});
-  }
-  next();
-});
+
+// app.options("*", cors());
 
 // Routes
 app.use("/api/users", userRoute);
