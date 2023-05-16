@@ -47,7 +47,7 @@ app.use("/api/boards", boardRoute);
 app.use("/api/jobs", jobRoute);
 
 //error middleware
-app.use(errorHandler);
+// app.use(errorHandler);
 
 //connect to db and start server
 mongoose
