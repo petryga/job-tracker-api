@@ -13,33 +13,15 @@ const allowedOrigins = require("./config/allowedOrigins.js");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+app.use(
+  cors({ origin: allowedOrigins, credentials: true, optionsSuccessStatus: 200 })
+);
 
 //middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// Enable CORS for preflight OPTIONS request
-app.options('"*"', cors(), (req, res) => {
-  // Log the request headers
-  console.log("Request Headers:", req.headers);
-
-  // Log the response headers
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  console.log("Response Headers:", res.getHeaders());
-
-  // Send the response
-  res.sendStatus(200);
-});
-
-// app.options("*", cors());
-app.use(
-  cors({ origin: allowedOrigins, credentials: true, optionsSuccessStatus: 200 })
-);
-//credentials: true,
 
 //routes middleware
 app.use("/api/users", userRoute);
