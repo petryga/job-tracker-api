@@ -8,7 +8,6 @@ const contactSchema = new Schema({
   },
   contactName: {
     type: String,
-    // required: [true, "Please enter a contact name"], // TODO
   },
   position: {
     type: String,

@@ -4,12 +4,12 @@ const {
   getContacts,
   getContact,
   // updateContact,
-  // deleteContact,
+  deleteContact,
 } = require("../controllers/contactController");
 
 router.get("/getAll/:boardID", getContacts);
 router.get("/getOne/:id", getContact);
 // router.put("/update/:id", updateContact);
-// router.delete("/delete/:id", deleteContact);
+router.delete("/delete/:contactID", deleteContact);
 
 module.exports = router;
