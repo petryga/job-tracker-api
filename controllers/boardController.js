@@ -3,7 +3,7 @@
 const asyncHandler = require("express-async-handler");
 const Board = require("../models/boardModel");
 const mongoose = require("mongoose");
-const { Job } = require("../models/jobModel");
+const { Job, Contact } = require("../models/jobModel");
 const { getRandomColor, jobSearchLists, notFoundError } = require("./helpers");
 
 const createBoard = asyncHandler(async (req, res) => {
@@ -22,6 +22,8 @@ const createBoard = asyncHandler(async (req, res) => {
     const lists = jobSearchLists(cardID, cardID2);
     const jobID = new mongoose.Types.ObjectId();
     const jobID2 = new mongoose.Types.ObjectId();
+    const contactID = new mongoose.Types.ObjectId();
+    const contactID2 = new mongoose.Types.ObjectId();
 
     board = await Board.create({
       title,
@@ -37,13 +39,10 @@ const createBoard = asyncHandler(async (req, res) => {
       companyName: "Google",
       position: "Software Engineer",
       isFavorite: true,
-      boardID: boardID,
+      boardID,
       cardID,
       contacts: {
-        contactName: "",
-        contactEmail: "",
-        contactPhone: "",
-        contactNotes: "",
+        _id: contactID,
         companyName: "Google",
         jobID,
       },
@@ -55,16 +54,29 @@ const createBoard = asyncHandler(async (req, res) => {
       companyName: "Meta",
       position: "CEO",
       isFavorite: false,
-      boardID: boardID,
+      boardID,
       cardID: cardID2,
       contacts: {
-        contactName: "",
-        contactEmail: "",
-        contactPhone: "",
-        contactNotes: "",
+        _id: contactID2,
         companyName: "Meta",
         jobID2,
       },
+    });
+
+    await Contact.create({
+      createdBy: userId,
+      companyName: "Google",
+      jobID,
+      _id: contactID,
+      boardID,
+    });
+
+    await Contact.create({
+      createdBy: userId,
+      companyName: "Meta",
+      jobID: jobID2,
+      _id: contactID2,
+      boardID,
     });
   } else {
     board = await Board.create({ title, createdBy: userId, lists: [] });
@@ -102,6 +114,13 @@ const deleteBoard = asyncHandler(async (req, res) => {
     if (jobs) {
       jobs.forEach(async (job) => {
         await job.deleteOne();
+      });
+    }
+
+    const contacts = await Contact.find({ boardID: id });
+    if (contacts) {
+      contacts.forEach(async (contact) => {
+        await contact.deleteOne();
       });
     }
     res.json({ message: "Board deleted" });
@@ -195,6 +214,7 @@ const createCard = asyncHandler(async (req, res) => {
 
   const cardID = new mongoose.Types.ObjectId();
   const jobID = new mongoose.Types.ObjectId();
+  const contactID = new mongoose.Types.ObjectId();
   const card = {
     _id: cardID,
     text,
@@ -213,13 +233,18 @@ const createCard = asyncHandler(async (req, res) => {
       cardID,
       boardID,
       contacts: {
-        contactName: "",
-        contactEmail: "",
-        contactPhone: "",
-        contactNotes: "",
+        _id: contactID,
         companyName: text,
         jobID,
       },
+    });
+
+    await Contact.create({
+      createdBy: userId,
+      companyName: text,
+      jobID,
+      _id: contactID,
+      boardID,
     });
   }
 

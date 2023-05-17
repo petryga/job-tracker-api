@@ -2,7 +2,6 @@ const asyncHandler = require("express-async-handler");
 const { Job, Contact } = require("../models/jobModel");
 const { notFoundError } = require("./helpers");
 const Board = require("../models/boardModel");
-const mongoose = require("mongoose");
 
 const getJob = asyncHandler(async (req, res) => {
   const { id: cardID } = req.params;
@@ -23,7 +22,8 @@ const updateJob = asyncHandler(async (req, res) => {
     boardID,
     cardID,
     listID,
-    contacts: formContacts,
+    userId,
+    contacts,
     ...rest
   } = req.body;
 
@@ -52,30 +52,42 @@ const updateJob = asyncHandler(async (req, res) => {
   card.subtext = position;
   card.isFavorite = isFavorite;
 
-  const newId = new mongoose.Types.ObjectId();
-
-  const updatedFormContacts = () => {
-    return formContacts.map((contact) => {
-      return {
-        ...contact,
-        jobID,
-        companyName,
-        _id: newId,
-      };
-    });
-  };
-
   const updatedJob = await Job.findByIdAndUpdate(
     jobID,
     {
       companyName,
       position,
       isFavorite,
-      contacts: updatedFormContacts(),
+      contacts,
       ...rest,
     },
     { new: true }
   );
+
+  contacts.forEach(async (contact) => {
+    const existingContact = await Contact.findById(contact._id);
+    if (existingContact) {
+      existingContact.contactName = contact.contactName;
+      existingContact.companyName = companyName;
+      existingContact.contactEmail = contact.contactEmail;
+      existingContact.contactPhone = contact.contactPhone;
+      existingContact.contactNotes = contact.contactNotes;
+      existingContact.position = contact.position;
+      await existingContact.save();
+    } else {
+      await Contact.create({
+        createdBy: userId,
+        contactName: contact.contactName,
+        position: contact.position,
+        contactEmail: contact.contactEmail,
+        contactPhone: contact.contactPhone,
+        contactNotes: contact.contactNotes,
+        jobID,
+        companyName: companyName,
+        boardID,
+      });
+    }
+  });
 
   if (!updatedJob) {
     return notFoundError("Job");
@@ -84,7 +96,5 @@ const updateJob = asyncHandler(async (req, res) => {
   await board.save();
   res.status(200).json({ data: updatedJob, message: "Job updated" });
 });
-
-
 
 module.exports = { getJob, updateJob };

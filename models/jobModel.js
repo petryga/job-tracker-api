@@ -2,7 +2,15 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const contactSchema = new Schema({
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   contactName: {
+    type: String,
+    // required: [true, "Please enter a contact name"], // TODO
+  },
+  position: {
     type: String,
   },
   contactEmail: {
@@ -20,6 +28,9 @@ const contactSchema = new Schema({
     type: String,
   },
   jobID: {
+    type: String,
+  },
+  boardID: {
     type: String,
   },
   companyName: {
