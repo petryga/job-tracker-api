@@ -70,7 +70,7 @@ const notFoundError = (res, name) => {
   const text = `${name} not found`;
 
   res.status(404).json({ message: text });
-  throw new Error(text);
+  return;
 };
 
 module.exports = {

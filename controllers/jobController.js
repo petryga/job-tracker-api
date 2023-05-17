@@ -28,8 +28,8 @@ const updateJob = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (!companyName) {
-    res.status(400);
-    throw new Error("Please provide a company name");
+    res.status(400).json({ message: "Please enter a company name" });
+    return;
   }
 
   const board = await Board.findById(boardID);

@@ -37,6 +37,10 @@ const jobSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Board",
   },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   companyName: {
     type: String,
     required: [true, "Please enter a company name"],

@@ -9,8 +9,8 @@ const { getRandomColor, jobSearchLists, notFoundError } = require("./helpers");
 const createBoard = asyncHandler(async (req, res) => {
   const { title, userId } = req.body;
   if (!title || !userId) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    res.status(400).json({ message: "Please fill in all fields" });
+    return;
   }
 
   let board;
@@ -33,6 +33,7 @@ const createBoard = asyncHandler(async (req, res) => {
 
     await Job.create({
       _id: jobID,
+      createdBy: userId,
       companyName: "Google",
       position: "Software Engineer",
       isFavorite: true,
@@ -50,6 +51,7 @@ const createBoard = asyncHandler(async (req, res) => {
 
     await Job.create({
       _id: jobID2,
+      createdBy: userId,
       companyName: "Meta",
       position: "CEO",
       isFavorite: false,
@@ -124,8 +126,8 @@ const updateBoard = asyncHandler(async (req, res) => {
 const createList = asyncHandler(async (req, res) => {
   const { title, boardID } = req.body;
   if (!title || !boardID) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    res.status(400).json({ message: "Please fill in all fields" });
+    return;
   }
 
   const board = await Board.findById(boardID);
@@ -141,8 +143,8 @@ const updateList = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title, boardID } = req.body;
   if (!title || !boardID) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    res.status(400).json({ message: "Please fill in all fields" });
+    return;
   }
 
   const board = await Board.findById(boardID);
@@ -175,10 +177,10 @@ const deleteList = asyncHandler(async (req, res) => {
 });
 
 const createCard = asyncHandler(async (req, res) => {
-  const { text, listID, boardID, isJobSearchBoard } = req.body;
+  const { text, listID, boardID, isJobSearchBoard, userId } = req.body;
   if (!text || !listID || !boardID) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    res.status(400).json({ message: "Please fill in all fields" });
+    return;
   }
   const board = await Board.findById(boardID);
 
@@ -206,6 +208,7 @@ const createCard = asyncHandler(async (req, res) => {
   if (isJobSearchBoard) {
     await Job.create({
       _id: jobID,
+      createdBy: userId,
       companyName: text,
       cardID,
       boardID,
@@ -230,8 +233,8 @@ const updateCard = asyncHandler(async (req, res) => {
   const { text, listID, boardID } = req.body;
 
   if (!text || !listID || !boardID) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    res.status(400).json({ message: "Please fill in all fields" });
+    return;
   }
 
   const board = await Board.findById(boardID);

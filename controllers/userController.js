@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Board = require("../models/boardModel");
+const { Job } = require("../models/jobModel");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, String(process.env.JWT_SECRET), {
@@ -13,34 +15,28 @@ const registerUser = asyncHandler(async (req, res) => {
   const { email, password, name, confirm_password } = req.body;
   if (!email) {
     res.status(400).json({ message: "Please enter an email" });
-    // throw new Error("Please enter an email");
   }
 
   if (!name) {
     res.status(400).json({ message: "Please enter a name" });
-    // throw new Error("Please enter a name");
   }
 
   if (!password || !confirm_password) {
     res.status(400).json({ message: "Please enter a password" });
-    // throw new Error("Please enter a password");
   }
 
   if (password.length < 6) {
     res.status(400).json({ message: "Password must be at least 6 characters" });
-    // throw new Error("Password must be at least 6 characters");
   }
 
   if (!email.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)) {
     res.status(400).json({ message: "Please enter a valid email" });
-    // throw new Error("Please enter a valid email");
   }
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
     res.status(400).json({ message: "User already exists" });
-    // throw new Error("User already exists");
   }
 
   const user = await User.create({
@@ -51,7 +47,6 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   const token = generateToken(user._id);
-  // console.log(token);
 
   res.cookie("token", token, {
     httpOnly: true,
@@ -73,26 +68,25 @@ const registerUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(400).json({ message: "Invalid user data" });
-    // throw new Error("Invalid user data");
   }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email) {
-    res.status(400);
-    throw new Error("Please enter an email");
+    res.status(400).json({ message: "Please enter an email" });
+    return;
   }
 
   if (!password) {
-    res.status(400);
-    throw new Error("Please enter a password");
+    res.status(400).json({ message: "Please enter a password" });
+    return;
   }
 
   const user = await User.findOne({ email });
   if (!user) {
-    res.status(400);
-    throw new Error("User does not exist, please sign up");
+    res.status(400).json({ message: "User does not exist, please sign up" });
+    return;
   }
 
   const isMatch = await bcrypt.compare(password, String(user.password));
@@ -107,8 +101,8 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!isMatch) {
-    res.status(400);
-    throw new Error("Invalid credentials");
+    res.status(400).json({ message: "Invalid credentials" });
+    return;
   }
 
   const data = {
@@ -124,7 +118,33 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.userId);
+  const boards = await Board.find({ createdBy: req.params.userId });
+  if (boards) {
+    boards.forEach(async (board) => {
+      await board.deleteOne();
+    });
+  }
+
+  const jobs = await Job.find({ createdBy: req.params.userId });
+  if (jobs) {
+    jobs.forEach(async (job) => {
+      await job.deleteOne();
+    });
+  }
+
+  if (user) {
+    await user.deleteOne();
+    res.status(200).json({ message: "User deleted successfully" });
+  } else {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+});
+
 module.exports = {
   registerUser,
   loginUser,
+  deleteUser,
 };
