@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 // CORS Configuration
 app.use(
   cors({
-    origin: allowedOrigins, // TODO move to env
+    origin: allowedOrigins,
     credentials: true,
     optionsSuccessStatus: 200,
   })
