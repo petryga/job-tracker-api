@@ -64,7 +64,7 @@ const jobSchema = new Schema({
   salary: {
     type: String,
   },
-  extras: {
+  remoteOnsite: {
     type: String,
   },
   link: {
