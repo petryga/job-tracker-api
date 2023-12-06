@@ -5,11 +5,11 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const userRoute = require("./routes/userRoute.js");
-const boardRoute = require("./routes/boardRoute.js");
-const jobRoute = require("./routes/jobRoute.js");
-const contactRoute = require("./routes/contactRoute.js");
-const allowedOrigins = require("./config/allowedOrigins.js");
+const userRoute = require("../routes/userRoute.js");
+const boardRoute = require("../routes/boardRoute.js");
+const jobRoute = require("../routes/jobRoute.js");
+const contactRoute = require("../routes/contactRoute.js");
+const allowedOrigins = require("../config/allowedOrigins.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
-    "backend": "nodemon server.js"
+    "start": "NODE_ENV=production node index.js",
+    "backend": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
