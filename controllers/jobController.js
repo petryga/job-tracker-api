@@ -4,16 +4,6 @@ const { notFoundError } = require("./helpers");
 const Board = require("../models/boardModel");
 const mongoose = require("mongoose");
 
-// const getJob = asyncHandler(async (req, res) => {
-//   const { id: cardID } = req.params;
-//   const job = await Job.find({ cardID });
-//   if (!job) {
-//     return notFoundError("Job");
-//   }
-
-//   res.status(200).json(job[0]);
-// });
-
 const getJob = asyncHandler(async (req, res) => {
   const { id: cardID } = req.params;
   const job = await Job.findOne({ cardID });
@@ -69,9 +59,9 @@ const updateJob = asyncHandler(async (req, res) => {
     contactEmail: contact.contactEmail,
     contactPhone: contact.contactPhone,
     contactNotes: contact.contactNotes,
-    jobID: jobID,
-    boardID: boardID,
-    companyName: companyName,
+    jobID,
+    boardID,
+    companyName,
     _id: contact._id ? contact._id : new mongoose.Types.ObjectId(),
   }));
 
