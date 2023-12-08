@@ -2,15 +2,25 @@ const asyncHandler = require("express-async-handler");
 const { Job, Contact } = require("../models/jobModel");
 const { notFoundError } = require("./helpers");
 const Board = require("../models/boardModel");
+const mongoose = require("mongoose");
+
+// const getJob = asyncHandler(async (req, res) => {
+//   const { id: cardID } = req.params;
+//   const job = await Job.find({ cardID });
+//   if (!job) {
+//     return notFoundError("Job");
+//   }
+
+//   res.status(200).json(job[0]);
+// });
 
 const getJob = asyncHandler(async (req, res) => {
   const { id: cardID } = req.params;
-  const job = await Job.find({ cardID });
+  const job = await Job.findOne({ cardID });
   if (!job) {
     return notFoundError("Job");
   }
-
-  res.status(200).json(job[0]);
+  res.status(200).json(job);
 });
 
 const updateJob = asyncHandler(async (req, res) => {
@@ -52,46 +62,52 @@ const updateJob = asyncHandler(async (req, res) => {
   card.subtext = position;
   card.isFavorite = isFavorite;
 
+  let updatedContacts = contacts.map((contact) => ({
+    createdBy: userId,
+    contactName: contact.contactName,
+    position: contact.position,
+    contactEmail: contact.contactEmail,
+    contactPhone: contact.contactPhone,
+    contactNotes: contact.contactNotes,
+    jobID: jobID,
+    boardID: boardID,
+    companyName: companyName,
+    _id: contact._id ? contact._id : new mongoose.Types.ObjectId(),
+  }));
+
   const updatedJob = await Job.findByIdAndUpdate(
     jobID,
     {
       companyName,
       position,
       isFavorite,
-      contacts,
+      contacts: updatedContacts,
       ...rest,
     },
     { new: true }
   );
 
-  contacts.forEach(async (contact) => {
-    const existingContact = await Contact.findById(contact._id);
-    if (existingContact) {
-      existingContact.contactName = contact.contactName;
-      existingContact.companyName = companyName;
-      existingContact.contactEmail = contact.contactEmail;
-      existingContact.contactPhone = contact.contactPhone;
-      existingContact.contactNotes = contact.contactNotes;
-      existingContact.position = contact.position;
-      await existingContact.save();
-    } else {
-      await Contact.create({
-        createdBy: userId,
-        contactName: contact.contactName,
-        position: contact.position,
-        contactEmail: contact.contactEmail,
-        contactPhone: contact.contactPhone,
-        contactNotes: contact.contactNotes,
-        jobID,
-        companyName: companyName,
-        boardID,
-      });
-    }
-  });
-
   if (!updatedJob) {
     return notFoundError("Job");
   }
+
+  const contactOperations = updatedJob?.contacts.map(async (contact) => {
+    try {
+      const existingContact = await Contact.findById(contact._id);
+
+      if (!existingContact) {
+        const contactData = { ...contact._doc };
+        await Contact.create(contactData);
+      } else {
+        Object.assign(existingContact, contact._doc);
+        await existingContact.save();
+      }
+    } catch (error) {
+      console.error("Error processing contact:", error);
+    }
+  });
+
+  await Promise.all(contactOperations);
 
   await board.save();
   res.status(200).json({ data: updatedJob, message: "Job updated" });
