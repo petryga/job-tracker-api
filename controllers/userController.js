@@ -15,28 +15,34 @@ const registerUser = asyncHandler(async (req, res) => {
   const { email, password, name, confirm_password } = req.body;
   if (!email) {
     res.status(400).json({ message: "Please enter an email" });
+    return;
   }
 
   if (!name) {
     res.status(400).json({ message: "Please enter a name" });
+    return;
   }
 
   if (!password || !confirm_password) {
     res.status(400).json({ message: "Please enter a password" });
+    return;
   }
 
   if (password.length < 6) {
     res.status(400).json({ message: "Password must be at least 6 characters" });
+    return;
   }
 
   if (!email.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)) {
     res.status(400).json({ message: "Please enter a valid email" });
+    return;
   }
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
     res.status(400).json({ message: "User already exists" });
+    return;
   }
 
   const user = await User.create({

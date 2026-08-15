@@ -8,7 +8,7 @@ const getJob = asyncHandler(async (req, res) => {
   const { id: cardID } = req.params;
   const job = await Job.findOne({ cardID });
   if (!job) {
-    return notFoundError("Job");
+    return notFoundError(res, "Job");
   }
   res.status(200).json(job);
 });
@@ -78,7 +78,7 @@ const updateJob = asyncHandler(async (req, res) => {
   );
 
   if (!updatedJob) {
-    return notFoundError("Job");
+    return notFoundError(res, "Job");
   }
 
   const contactOperations = updatedJob?.contacts.map(async (contact) => {

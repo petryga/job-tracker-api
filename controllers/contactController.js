@@ -7,7 +7,7 @@ const getContacts = asyncHandler(async (req, res) => {
 
   const contacts = await Contact.find({ boardID });
   if (!contacts) {
-    return notFoundError("Contacts");
+    return notFoundError(res, "Contacts");
   }
   res.status(200).json(contacts);
 });
@@ -17,7 +17,7 @@ const getContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(id);
 
   if (!contact) {
-    return notFoundError("Contact");
+    return notFoundError(res, "Contact");
   }
   res.status(200).json(contact);
 });
@@ -27,7 +27,7 @@ const deleteContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findByIdAndDelete(contactID);
 
   if (!contact) {
-    return notFoundError("Contact");
+    return notFoundError(res, "Contact");
   }
   res.status(200).json({ message: "Contact deleted" });
 });

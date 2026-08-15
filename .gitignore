@@ -1,6 +1,6 @@
-/node_modules
+node_modules/
 .env
-/TODO
-node_modules
-TODO
-.gitignore
+.env.*
+.DS_Store
+coverage/
+*.log

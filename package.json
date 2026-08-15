@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server.js",
-    "backend": "nodemon server.js"
+    "backend": "nodemon server.js",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +22,24 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.2.0",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/test/env.js"
+    ],
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "models/**/*.js",
+      "routes/**/*.js",
+      "config/**/*.js",
+      "app.js"
+    ],
+    "testTimeout": 20000
   }
 }

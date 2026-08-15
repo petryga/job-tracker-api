@@ -1,39 +1,9 @@
-const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const userRoute = require("./routes/userRoute.js");
-const boardRoute = require("./routes/boardRoute.js");
-const jobRoute = require("./routes/jobRoute.js");
-const contactRoute = require("./routes/contactRoute.js");
-const allowedOrigins = require("./config/allowedOrigins.js");
+const app = require("./app.js");
 
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// CORS Configuration
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
-
-// Routes
-app.use("/api/users", userRoute);
-app.use("/api/boards", boardRoute);
-app.use("/api/jobs", jobRoute);
-app.use("/api/contacts", contactRoute);
 
 // Connect to MongoDB and start server
 mongoose
