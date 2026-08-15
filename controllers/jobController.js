@@ -74,7 +74,7 @@ const updateJob = asyncHandler(async (req, res) => {
       contacts: updatedContacts,
       ...rest,
     },
-    { new: true }
+    { returnDocument: "after" }
   );
 
   if (!updatedJob) {

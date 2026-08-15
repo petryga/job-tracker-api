@@ -134,7 +134,7 @@ const updateBoard = asyncHandler(async (req, res) => {
   const board = await Board.findById(id);
   if (board) {
     const updatedBoard = await Board.findByIdAndUpdate(id, req.body, {
-      new: true,
+      returnDocument: "after",
     });
     res.status(201).json(updatedBoard);
   } else {
