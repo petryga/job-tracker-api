@@ -56,7 +56,6 @@ All require a bearer token; all are scoped to the caller.
 | `PUT` | `/api/jobs/:id` | update a job and its contacts |
 | `GET` | `/api/contacts/getAll/:boardID` | contacts on a board |
 | `GET` `DELETE` | `/api/contacts/getOne/:id`, `/api/contacts/delete/:id` | one contact |
-| `DELETE` | `/api/users/me` | erase everything the caller owns |
 
 ## Running locally
 

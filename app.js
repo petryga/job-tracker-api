@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 
-const userRoute = require("./routes/userRoute.js");
 const boardRoute = require("./routes/boardRoute.js");
 const jobRoute = require("./routes/jobRoute.js");
 const contactRoute = require("./routes/contactRoute.js");
@@ -27,7 +26,6 @@ app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 // Everything below requires a valid Supabase access token.
 app.use(requireAuth);
 
-app.use("/api/users", userRoute);
 app.use("/api/boards", boardRoute);
 app.use("/api/jobs", jobRoute);
 app.use("/api/contacts", contactRoute);
