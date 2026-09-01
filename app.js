@@ -6,23 +6,27 @@ const boardRoute = require("./routes/boardRoute.js");
 const jobRoute = require("./routes/jobRoute.js");
 const contactRoute = require("./routes/contactRoute.js");
 const allowedOrigins = require("./config/allowedOrigins.js");
+const { requireAuth } = require("./middleware/auth.js");
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// CORS Configuration
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 
-// Routes
+// Unauthenticated: hosting platforms ping this to check the container is up.
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
+
+// Everything below requires a valid Supabase access token.
+app.use(requireAuth);
+
 app.use("/api/users", userRoute);
 app.use("/api/boards", boardRoute);
 app.use("/api/jobs", jobRoute);

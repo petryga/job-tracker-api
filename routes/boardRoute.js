@@ -16,7 +16,7 @@ const {
 } = require("../controllers/boardController");
 
 router.post("/create", createBoard);
-router.get("/getAll/:userId", getBoards);
+router.get("/getAll", getBoards);
 router.get("/:id", getBoard);
 router.delete("/:id", deleteBoard);
 router.put("/:id", updateBoard);

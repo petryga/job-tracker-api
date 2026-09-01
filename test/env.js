@@ -1,2 +1,2 @@
-process.env.JWT_SECRET = "test-jwt-secret";
-process.env.JWT_LIFETIME = "7d";
+process.env.SUPABASE_URL = "https://test.supabase.co";
+delete process.env.AUTH_DISABLED;

@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const contactSchema = new Schema({
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
+  createdBy: { type: String, index: true },
   contactName: {
     type: String,
   },
@@ -16,7 +13,7 @@ const contactSchema = new Schema({
     type: String,
     trim: true,
     match: [
-      /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
+      /^([\w.-]+@([\w-]+\.)+[a-zA-Z]{2,})?$/,
       "Please enter a valid email",
     ],
   },
@@ -47,10 +44,7 @@ const jobSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Board",
   },
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
+  createdBy: { type: String, index: true },
   companyName: {
     type: String,
     required: [true, "Please enter a company name"],

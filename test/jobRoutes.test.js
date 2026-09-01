@@ -1,7 +1,7 @@
-const request = require("supertest");
 const mongoose = require("mongoose");
 const { connect, closeDatabase, clearDatabase } = require("./testDb");
-const app = require("../app");
+const { app, api, TEST_USER } = require("./authRequest");
+const request = require("supertest");
 const Board = require("../models/boardModel");
 const { Job, Contact } = require("../models/jobModel");
 
@@ -9,19 +9,24 @@ beforeAll(async () => connect());
 afterEach(async () => clearDatabase());
 afterAll(async () => closeDatabase());
 
+it("rejects a request with no token", async () => {
+  const res = await request(app).get("/api/jobs/getOne/x");
+  expect(res.status).toBe(401);
+});
+
 describe("GET /api/jobs/getOne/:id", () => {
   it("finds a job by its cardID", async () => {
     const cardID = new mongoose.Types.ObjectId();
-    await Job.create({ cardID, companyName: "Acme" });
+    await Job.create({ createdBy: TEST_USER, cardID, companyName: "Acme" });
 
-    const res = await request(app).get(`/api/jobs/getOne/${cardID}`);
+    const res = await api.get(`/api/jobs/getOne/${cardID}`);
 
     expect(res.status).toBe(200);
     expect(res.body.companyName).toBe("Acme");
   });
 
   it("returns 404 when no job matches the cardID", async () => {
-    const res = await request(app).get(
+    const res = await api.get(
       `/api/jobs/getOne/${new mongoose.Types.ObjectId()}`
     );
 
@@ -34,7 +39,7 @@ describe("PUT /api/jobs/:id", () => {
   const setUp = async () => {
     const listID = new mongoose.Types.ObjectId();
     const cardID = new mongoose.Types.ObjectId();
-    const board = await Board.create({
+    const board = await Board.create({ createdBy: TEST_USER,
       title: "Job Search",
       isJobSearchBoard: true,
       lists: [
@@ -45,21 +50,20 @@ describe("PUT /api/jobs/:id", () => {
         },
       ],
     });
-    const job = await Job.create({ cardID, boardID: board._id, companyName: "Acme" });
+    const job = await Job.create({ createdBy: TEST_USER, cardID, boardID: board._id, companyName: "Acme" });
     return { board, job, listID, cardID };
   };
 
   it("updates the job and syncs the card's text/subtext/isFavorite", async () => {
     const { board, job, listID, cardID } = await setUp();
 
-    const res = await request(app).put(`/api/jobs/${job._id}`).send({
+    const res = await api.put(`/api/jobs/${job._id}`).send({
       companyName: "Acme Corp",
       position: "Engineer",
       isFavorite: true,
       boardID: board._id.toString(),
       cardID: cardID.toString(),
       listID: listID.toString(),
-      userId: "user-1",
       contacts: [],
     });
 
@@ -77,14 +81,13 @@ describe("PUT /api/jobs/:id", () => {
   it("creates new contact documents from the submitted contacts", async () => {
     const { board, job, listID, cardID } = await setUp();
 
-    const res = await request(app)
+    const res = await api
       .put(`/api/jobs/${job._id}`)
       .send({
         companyName: "Acme",
         boardID: board._id.toString(),
         cardID: cardID.toString(),
         listID: listID.toString(),
-        userId: new mongoose.Types.ObjectId().toString(),
         contacts: [{ contactName: "Jamie", contactEmail: "jamie@acme.com" }],
       });
 
@@ -97,20 +100,19 @@ describe("PUT /api/jobs/:id", () => {
   it("updates an existing contact rather than duplicating it", async () => {
     const { board, job, listID, cardID } = await setUp();
     const contactID = new mongoose.Types.ObjectId();
-    await Contact.create({
+    await Contact.create({ createdBy: TEST_USER,
       _id: contactID,
       contactName: "Jamie",
       boardID: board._id.toString(),
     });
 
-    const res = await request(app)
+    const res = await api
       .put(`/api/jobs/${job._id}`)
       .send({
         companyName: "Acme",
         boardID: board._id.toString(),
         cardID: cardID.toString(),
         listID: listID.toString(),
-        userId: new mongoose.Types.ObjectId().toString(),
         contacts: [
           { _id: contactID.toString(), contactName: "Jamie Doe" },
         ],
@@ -125,7 +127,7 @@ describe("PUT /api/jobs/:id", () => {
   it("requires a company name", async () => {
     const { board, job, listID, cardID } = await setUp();
 
-    const res = await request(app).put(`/api/jobs/${job._id}`).send({
+    const res = await api.put(`/api/jobs/${job._id}`).send({
       boardID: board._id.toString(),
       cardID: cardID.toString(),
       listID: listID.toString(),
@@ -136,7 +138,7 @@ describe("PUT /api/jobs/:id", () => {
   });
 
   it("returns 404 when the board does not exist", async () => {
-    const res = await request(app)
+    const res = await api
       .put(`/api/jobs/${new mongoose.Types.ObjectId()}`)
       .send({ companyName: "Acme", boardID: new mongoose.Types.ObjectId().toString() });
 
@@ -146,7 +148,7 @@ describe("PUT /api/jobs/:id", () => {
   it("returns 404 when the list does not exist on the board", async () => {
     const { board, job } = await setUp();
 
-    const res = await request(app).put(`/api/jobs/${job._id}`).send({
+    const res = await api.put(`/api/jobs/${job._id}`).send({
       companyName: "Acme",
       boardID: board._id.toString(),
       listID: new mongoose.Types.ObjectId().toString(),
@@ -159,7 +161,7 @@ describe("PUT /api/jobs/:id", () => {
   it("returns 404 when the card does not exist in the list", async () => {
     const { board, job, listID } = await setUp();
 
-    const res = await request(app).put(`/api/jobs/${job._id}`).send({
+    const res = await api.put(`/api/jobs/${job._id}`).send({
       companyName: "Acme",
       boardID: board._id.toString(),
       listID: listID.toString(),
@@ -172,7 +174,7 @@ describe("PUT /api/jobs/:id", () => {
   it("returns 404 when the job itself does not exist", async () => {
     const { board, listID, cardID } = await setUp();
 
-    const res = await request(app)
+    const res = await api
       .put(`/api/jobs/${new mongoose.Types.ObjectId()}`)
       .send({
         companyName: "Acme",

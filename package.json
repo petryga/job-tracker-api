@@ -1,27 +1,29 @@
 {
-  "name": "backend",
+  "name": "job-tracker-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express + Mongoose API for a Kanban job-application tracker. Supabase JWT auth, per-user data scoping.",
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server.js",
     "backend": "nodemon server.js",
     "test": "jest --runInBand",
-    "test:coverage": "jest --runInBand --coverage"
+    "test:coverage": "jest --runInBand --coverage",
+    "lint": "eslint ."
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Alexandra Petryga",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-async-handler": "^1.2.0",
-    "jsonwebtoken": "^9.0.3",
+    "jose": "^6.2.8",
     "mongoose": "^9.9.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.11.0",
     "jest": "^30.4.2",
     "mongodb-memory-server": "^11.2.0",
     "supertest": "^7.2.2"
@@ -35,9 +37,13 @@
       "controllers/**/*.js",
       "models/**/*.js",
       "routes/**/*.js",
+      "middleware/**/*.js",
       "config/**/*.js",
       "app.js"
     ],
-    "testTimeout": 20000
+    "testTimeout": 20000,
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/setup.js"
+    ]
   }
 }

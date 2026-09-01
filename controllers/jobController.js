@@ -6,10 +6,8 @@ const mongoose = require("mongoose");
 
 const getJob = asyncHandler(async (req, res) => {
   const { id: cardID } = req.params;
-  const job = await Job.findOne({ cardID });
-  if (!job) {
-    return notFoundError(res, "Job");
-  }
+  const job = await Job.findOne({ cardID, createdBy: req.userId });
+  if (!job) return notFoundError(res, "Job");
   res.status(200).json(job);
 });
 
@@ -23,7 +21,8 @@ const updateJob = asyncHandler(async (req, res) => {
     cardID,
     listID,
     userId,
-    contacts,
+    createdBy,
+    contacts = [],
     ...rest
   } = req.body;
 
@@ -32,28 +31,21 @@ const updateJob = asyncHandler(async (req, res) => {
     return;
   }
 
-  const board = await Board.findById(boardID);
-  if (!board) {
-    return notFoundError(res, "Board");
-  }
+  const board = await Board.findOne({ _id: boardID, createdBy: req.userId });
+  if (!board) return notFoundError(res, "Board");
 
-  // @ts-ignore
   const list = board.lists.find((list) => list._id == listID);
-  if (!list) {
-    return notFoundError(res, "List");
-  }
+  if (!list) return notFoundError(res, "List");
 
-  // @ts-ignore
   const card = list.cards.find((card) => card._id == cardID);
-  if (!card) {
-    return notFoundError(res, "Card");
-  }
+  if (!card) return notFoundError(res, "Card");
+
   card.text = companyName;
   card.subtext = position;
   card.isFavorite = isFavorite;
 
-  let updatedContacts = contacts.map((contact) => ({
-    createdBy: userId,
+  const updatedContacts = contacts.map((contact) => ({
+    createdBy: req.userId,
     contactName: contact.contactName,
     position: contact.position,
     contactEmail: contact.contactEmail,
@@ -65,29 +57,19 @@ const updateJob = asyncHandler(async (req, res) => {
     _id: contact._id ? contact._id : new mongoose.Types.ObjectId(),
   }));
 
-  const updatedJob = await Job.findByIdAndUpdate(
-    jobID,
-    {
-      companyName,
-      position,
-      isFavorite,
-      contacts: updatedContacts,
-      ...rest,
-    },
-    { returnDocument: "after" }
+  const updatedJob = await Job.findOneAndUpdate(
+    { _id: jobID, createdBy: req.userId },
+    { companyName, position, isFavorite, contacts: updatedContacts, ...rest },
+    { returnDocument: "after" },
   );
 
-  if (!updatedJob) {
-    return notFoundError(res, "Job");
-  }
+  if (!updatedJob) return notFoundError(res, "Job");
 
-  const contactOperations = updatedJob?.contacts.map(async (contact) => {
+  const contactOperations = updatedJob.contacts.map(async (contact) => {
     try {
       const existingContact = await Contact.findById(contact._id);
-
       if (!existingContact) {
-        const contactData = { ...contact._doc };
-        await Contact.create(contactData);
+        await Contact.create({ ...contact._doc });
       } else {
         Object.assign(existingContact, contact._doc);
         await existingContact.save();

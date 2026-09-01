@@ -19,10 +19,7 @@ const boardSchema = new Schema(
       type: String,
       required: [true, "Please enter a board name"],
     },
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+    createdBy: { type: String, index: true },
     lists: [
       {
         title: {
