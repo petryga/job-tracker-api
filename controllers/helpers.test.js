@@ -9,11 +9,11 @@ describe("getRandomColor", () => {
 });
 
 describe("jobSearchCards", () => {
-  it("seeds a Google and a Meta card with the given ids", () => {
+  it("seeds a Google and a Figma card with the given ids", () => {
     const cards = jobSearchCards("card-1", "card-2");
     expect(cards).toHaveLength(2);
     expect(cards[0]).toMatchObject({ _id: "card-1", text: "Google", isFavorite: true });
-    expect(cards[1]).toMatchObject({ _id: "card-2", text: "Meta", isFavorite: false });
+    expect(cards[1]).toMatchObject({ _id: "card-2", text: "Figma", isFavorite: false });
   });
 });
 

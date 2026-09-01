@@ -65,21 +65,21 @@ const updateJob = asyncHandler(async (req, res) => {
 
   if (!updatedJob) return notFoundError(res, "Job");
 
-  const contactOperations = updatedJob.contacts.map(async (contact) => {
-    try {
-      const existingContact = await Contact.findById(contact._id);
-      if (!existingContact) {
-        await Contact.create({ ...contact._doc });
-      } else {
-        Object.assign(existingContact, contact._doc);
+  // Mirror the job's contacts into the standalone Contact collection. A failure
+  // here rejects the request (500) rather than being swallowed, so the client
+  // never sees "updated" over a partial write.
+  await Promise.all(
+    updatedJob.contacts.map(async (contact) => {
+      const data = contact._doc ?? contact;
+      const existingContact = await Contact.findById(data._id);
+      if (existingContact) {
+        existingContact.set(data);
         await existingContact.save();
+      } else {
+        await Contact.create(data);
       }
-    } catch (error) {
-      console.error("Error processing contact:", error);
-    }
-  });
-
-  await Promise.all(contactOperations);
+    }),
+  );
 
   await board.save();
   res.status(200).json({ data: updatedJob, message: "Job updated" });

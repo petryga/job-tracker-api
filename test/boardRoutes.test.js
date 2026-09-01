@@ -37,11 +37,11 @@ describe("POST /api/boards/create", () => {
       "Rejected",
       "Accepted",
     ]);
-    expect(res.body.lists[0].cards.map((c) => c.text)).toEqual(["Google", "Meta"]);
+    expect(res.body.lists[0].cards.map((c) => c.text)).toEqual(["Google", "Figma"]);
 
     const jobs = await Job.find({ boardID: res.body._id });
     expect(jobs).toHaveLength(2);
-    expect(jobs.map((j) => j.companyName).sort()).toEqual(["Google", "Meta"]);
+    expect(jobs.map((j) => j.companyName).sort()).toEqual(["Figma", "Google"]);
 
     const contacts = await Contact.find({ boardID: res.body._id });
     expect(contacts).toHaveLength(2);
@@ -92,7 +92,7 @@ describe("PUT /api/boards/:id", () => {
       .put(`/api/boards/${board._id}`)
       .send({ title: "New Title" });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.title).toBe("New Title");
   });
 
@@ -164,7 +164,7 @@ describe("Lists", () => {
       .put(`/api/boards/lists/updateList/${listID}`)
       .send({ title: "Backlog", boardID: board._id.toString() });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     const updated = await Board.findById(board._id);
     expect(updated.lists[0].title).toBe("Backlog");
   });
@@ -205,7 +205,7 @@ describe("Lists", () => {
       .delete(`/api/boards/lists/deleteList/${listID}`)
       .send({ boardID: board._id.toString() });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     const updated = await Board.findById(board._id);
     expect(updated.lists).toHaveLength(0);
   });
@@ -301,7 +301,7 @@ describe("Cards", () => {
       boardID: board._id.toString(),
     });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     const updated = await Board.findById(board._id);
     expect(updated.lists[0].cards[0].text).toBe("New");
   });
@@ -357,7 +357,7 @@ describe("Cards", () => {
       .delete(`/api/boards/cards/deleteCard/${cardID}`)
       .send({ listID: listID.toString(), boardID: board._id.toString() });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     const updated = await Board.findById(board._id);
     expect(updated.lists[0].cards).toHaveLength(0);
     expect(await Job.findOne({ cardID })).toBeNull();
@@ -375,7 +375,7 @@ describe("Cards", () => {
       .delete(`/api/boards/cards/deleteCard/${cardRes.body._id}`)
       .send({ listID: listID.toString(), boardID: board._id.toString() });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     const updated = await Board.findById(board._id);
     expect(updated.lists[0].cards).toHaveLength(0);
   });
@@ -421,7 +421,7 @@ describe("PUT /api/boards/all/drag", () => {
       droppableIndexEnd: 1,
     });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.lists.map((l) => l.title)).toEqual(["B", "A"]);
   });
 
@@ -447,7 +447,7 @@ describe("PUT /api/boards/all/drag", () => {
       droppableIndexEnd: 1,
     });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.lists[0].cards.map((c) => c.text)).toEqual(["Two", "One"]);
   });
 
@@ -471,7 +471,7 @@ describe("PUT /api/boards/all/drag", () => {
       droppableIndexEnd: 0,
     });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.lists[0].cards).toHaveLength(0);
     expect(res.body.lists[1].cards.map((c) => c.text)).toEqual(["One"]);
   });

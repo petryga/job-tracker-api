@@ -32,8 +32,8 @@ const jobSearchCards = (cardID, cardID2) => [
   },
   {
     _id: cardID2,
-    text: "Meta",
-    subtext: "CEO",
+    text: "Figma",
+    subtext: "Product Designer",
     color: getRandomColor(),
     isFavorite: false,
   },
