@@ -81,9 +81,10 @@ auth, set `SUPABASE_URL` to the same project the frontend uses and leave
 | `CORS_ORIGIN` | no | comma-separated allowlist; defaults to `http://localhost:3001`. In production, the deployed frontend's origin. |
 | `PORT` | no | defaults to `3000` |
 
-Deployed on Northflank; the frontend
-([job-tracker](https://github.com/petryga/job-tracker)) is a static site on
-Render, pointed here via its `VITE_BACKEND_URL`.
+Not deployed: the frontend's live demo
+([job-tracker](https://github.com/petryga/job-tracker)) keeps its data in the
+browser instead. Run this API locally and start the frontend with
+`VITE_DATA_SOURCE=api` to use it.
 
 ## Tests
 
